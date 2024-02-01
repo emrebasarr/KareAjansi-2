@@ -1,0 +1,158 @@
+﻿﻿@{
+    ViewData["Title"] = "Manken Detay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 class="page-title">Manken Detay</h3>
+
+<div class="row">
+    <div class="col-lg-4 col-sm-12">
+        <div id="mankenResimAlani">
+            <img id="mankenResim" src="#" alt="Manken Resmi" style="max-width: 300px; max-height: 300px;">
+            <input type="file" id="fileInput" accept="image/*">
+            <button type="button" id="uploadButton">Resmi Yükle</button>
+        </div>
+    </div>
+    <div class="col-lg-9 col-sm-12">
+        <ul id="mankenDetayListesi" class="list-unstyled" style="margin-bottom: 20px;">
+
+        </ul>
+        <div class="row mt-3">
+            <div class="col">
+                <button class="btn btn-danger mr-2" id="deleteButton">Sil</button>
+                <a class="btn btn-primary" id="updateButton" href="#">Güncelle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <h4 class="side-title mb-2">Bir yorum bırakın</h4>
+<p class="mb-4">İşaretli alanları doldurmanız gerekmektedir.</p>
+
+<form id="yorumEkleForm" style="margin-top: 20px;">
+    <div class="form-group">
+        <textarea placeholder="Yorumunuz" class="form-control" id="yorumu" style="min-height: 100px;"></textarea>
+    </div>
+
+    <div class="input--grids row">
+        <div class="form-group col-lg-6">
+            <input type="text" placeholder="Adınız" class="form-control" id="yazari" required />
+        </div>
+    </div>
+
+    <div class="submit text-right">
+        <button type="button" class="btn btn-style btn-primary" onclick="addYorum()" style="margin-right: 10px;">Yorum Yap</button>
+    </div>
+</form>
+ *@
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function getMankenDetay(mankenId) {
+                $.ajax({
+                    url: `https://localhost:7254/api/Mankenler/getmanken/${mankenId}`,
+                    type: "GET",
+                    success: function (data) {
+                        fillMankenDetay(data);
+                        getYorumlar(mankenId);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+
+            function fillMankenDetay(manken) {
+                const mankenDetayListesi = $("#mankenDetayListesi");
+                mankenDetayListesi.empty(); 
+                const detayHtml = `
+                                           <li><strong>ID:</strong> ${manken.id}</li>
+                                            <li><strong>Ad:</strong> ${manken.ad}</li>
+                                            <li><strong>Soyad:</strong> ${manken.soyad}</li>
+                                            <li><strong>Adres:</strong> ${manken.adres}</li>
+                                            <li><strong>Tel1:</strong> ${manken.tel1}</li>
+                                            <li><strong>Tel2:</strong> ${manken.tel2}</li>
+                                            <li><strong>Ayakkabi No:</strong> ${manken.ayakkabiNo}</li>
+                                            <li><strong>Beden:</strong> ${manken.beden}</li>
+                                            <li><strong>Kilo:</strong> ${manken.kilo}</li>
+                                            <li><strong>Sac Rengi:</strong> ${manken.sacRengi}</li>
+                                            <li><strong>Goz Rengi:</strong> ${manken.gozRengi}</li>
+                                            <li><strong>Sehir Disi Calisabilme Durumu:</strong> ${manken.sehirDisiCalisabilmeDurumu ? 'Evet' : 'Hayır'}</li>
+                                            <li><strong>Ehliyet:</strong> ${manken.ehliyet ? 'Evet' : 'Hayır'}</li>
+                                            <li><strong>Yabanci Dil:</strong> ${manken.yabanciDil}</li>
+                                            <li><strong>Cinsiyet:</strong> ${manken.cinsiyet}</li>
+                                            <li><strong>Ozellik:</strong> ${manken.ozellik}</li>
+                                            <li><strong>Kategori ID:</strong> ${manken.kategoriId}</li>
+                                            <li><strong>Durum:</strong> ${manken.status}</li>
+                                        `;
+                mankenDetayListesi.append(detayHtml);
+
+
+                $("#updateButton").on("click", function () {
+                    redirectToGuncelle(manken.id);
+                });
+            }
+
+            const mankenId = window.location.pathname.split('/').pop();
+
+            getMankenDetay(mankenId);
+
+            $("#deleteButton").on("click", function () {
+                if (confirm("Manken silinsin mi?")) {
+                    deleteManken(mankenId);
+                }
+            });
+
+            //Manken Silme işlemim
+            function deleteManken(id) {
+                if (confirm("Manken silinsin mi?")) {
+                    $.ajax({
+                        url: `https://localhost:7254/api/Mankenler/deletemanken/${id}`,
+                        type: "DELETE",
+                        success: function (data) {
+                            alert("Manken başarıyla silindi.");
+                            location.reload();
+                        },
+                        error: function (err) {
+                            console.log(err);
+                            alert("Manken silinirken bir hata oluştu.");
+                        }
+                    });
+                }
+            }
+
+            function redirectToGuncelle(id) {
+                window.location.href = `/MankenSayfa/Guncelle?id=${id}`;
+            }
+
+            // //Yorum ekleme
+            // function addYorum(yorum) {
+            //     $.ajax({
+            //         url: 'https://localhost:7254/api/Yorumlar/addyorum',
+            //         type: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify(yorum),
+            //         success: function (result) {
+            //             alert(result);
+            //             location.reload();
+            //         },
+            //         error: function (error) {
+            //             console.log(error);
+            //             alert('Yorum eklenirken bir hata oluştu.');
+            //         }
+            //     });
+            // }
+
+            // $("#yorumEkleForm button").on("click", function () {
+
+            //     var yorumDTO = {
+            //         yazari: $("#yazari").val(),
+            //         yorumu: $("#yorumu").val(),
+            //         mankenId: mankenId 
+            //     };
+            //     addYorum(yorumDTO);
+            // });      
+        });
+    </script>
+}

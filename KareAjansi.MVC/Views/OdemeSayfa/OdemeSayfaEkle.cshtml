@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Ödeme Ekle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="my-4">Yeni Ödeme Ekleme</h1>
+
+<form id="odemeEkleForm">
+    <div class="form-group">
+        <label for="mankenAdi">Manken Adı:</label>
+        <input type="text" class="form-control" id="mankenAdi" name="mankenAdi" required>
+    </div>
+    <div class="form-group">
+        <label for="mankenId">Manken ID:</label>
+        <input type="text" class="form-control" id="mankenId" name="mankenId" required>
+    </div>
+    <div class="form-group">
+        <label for="kategoriId">Kategori ID:</label>
+        <input type="text" class="form-control" id="kategoriId" name="kategoriId" required>
+    </div>
+    <div class="form-group">
+        <label for="organizasyonId">Organizasyon ID:</label>
+        <input type="text" class="form-control" id="organizasyonId" name="organizasyonId" required>
+    </div>
+    <div class="form-group">
+        <label for="gunSayisi">Gün Sayısı:</label>
+        <input type="text" class="form-control" id="gunSayisi" name="gunSayisi" required>
+    </div>
+    <div class="form-group">
+        <label for="mankenSayisi">Manken Sayisi:</label>
+        <input type="text" class="form-control" id="mankenSayisi" name="mankenSayisi" required>
+    </div>
+    <div class="form-group">
+        <label for="sirkettenAlinacakUcret">Sirketten Alinacak Ucret:</label>
+        <input type="text" class="form-control" id="sirkettenAlinacakUcret" name="sirkettenAlinacakUcret" required>
+    </div>
+    <div class="form-group">
+        <label for="konaklamaUcreti">Konaklama Ücreti:</label>
+        <input type="text" class="form-control" id="konaklamaUcreti" name="konaklamaUcreti" required>
+    </div>
+    <div class="form-group">
+        <label for="yemekUcreti">Yemek Ücreti:</label>
+        <input type="text" class="form-control" id="yemekUcreti" name="yemekUcreti" required>
+    </div>
+    <div class="form-group">
+        <label for="konum">Konum:</label>
+        <input type="checkbox" class="form-check-input" id="konum" name="konum" value="true">
+    </div>
+    <!-- Diğer form alanları buraya eklenecek -->
+    <button type="button" class="btn btn-primary" onclick="addOdeme()">Ödeme Ekle</button>
+</form>
+
+<!-- Uyarı mesajları için alan -->
+<div id="uyariMesaj" class="text-danger"></div>
+
+@section scripts {
+    <script>
+        function addOdeme() {
+            var mankenAdi = $("#mankenAdi").val();
+            var mankenId = $("#mankenId").val();
+            var kategoriId = $("#kategoriId").val();
+            var organizasyonId = $("#organizasyonId").val();
+            var gunSayisi = $("#gunSayisi").val();
+            var konaklamaUcreti = $("#konaklamaUcreti").val();
+            var yemekUcreti = $("#yemekUcreti").val();
+            var mankenSayisi = $("#mankenSayisi").val();
+            var sirkettenAlinacakUcret = $("#sirkettenAlinacakUcret").val();
+            var konum = $("#konum").prop("checked");
+
+            // Giriş doğrulaması
+            if (!mankenAdi || !mankenId || !kategoriId || !organizasyonId || !gunSayisi || !konaklamaUcreti || !yemekUcreti) {
+                $("#uyariMesaj").text("Zorunlu alanları doldurmalısınız: Manken Adı, Manken ID, Kategori ID, Organizasyon ID, Gün Sayısı, Konaklama Ücreti, Yemek Ücreti");
+                return;
+            }
+
+            // Uyarıyı temizle
+            $("#uyariMesaj").text("");
+
+            var odemeDTO = {
+                mankenAdi: mankenAdi,
+                mankenId: mankenId,
+                kategoriId: kategoriId,
+                organizasyonId: organizasyonId,
+                gunSayisi: gunSayisi,
+                konaklamaUcreti: konaklamaUcreti,
+                yemekUcreti: yemekUcreti,
+                mankenSayisi: mankenSayisi,
+                sirkettenAlinacakUcret: sirkettenAlinacakUcret,
+                konum: konum,
+                // Diğer form alanları buraya eklenecek
+            };
+
+            $.ajax({
+                url: "https://localhost:7254/api/Odemeler/addodeme",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(odemeDTO),
+                success: function (data) {
+                    alert("Ödeme başarıyla eklendi.");
+                    // Sayfayı yenile
+                    window.location.reload();
+                },
+                error: function (err) {
+                    console.log(err);
+                    alert("Ödeme eklenirken bir hata oluştu.");
+                }
+            });
+        }
+    </script>
+}
